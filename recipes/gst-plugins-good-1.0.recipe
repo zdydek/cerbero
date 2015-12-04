@@ -1,5 +1,6 @@
 # -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
 
+from cerbero.build.build import modify_environment
 
 class Recipe(recipe.Recipe):
     name = 'gst-plugins-good-1.0'
@@ -75,3 +76,9 @@ class Recipe(recipe.Recipe):
 
         if self.config.variants.nodebug:
             self.append_env['CFLAGS'] += ' -DGST_LEVEL_MAX=GST_LEVEL_FIXME'
+
+    @modify_environment
+    def configure(self):
+        for key in os.environ:
+            print "%s=%s" % (key, os.environ[key])
+        super(recipe.Recipe, self).configure()

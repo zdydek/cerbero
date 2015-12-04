@@ -84,6 +84,8 @@ class Recipe(recipe.Recipe):
                 ' ' + gnustl_includes
             self.append_env['LDFLAGS'] = ' ' + gnustl_libs + ' ' + \
                 pthread_libs_path
+        if self.config.target_platform == Platform.LINUX and self.config.target_arch == Architecture.ARMv7L:
+            self.allow_parallel_build = False
 
     def configure(self):
         # Fix gcc version check. The old check fails with gcc-5.0 to 5.6
@@ -108,7 +110,7 @@ class Recipe(recipe.Recipe):
             shell.replace(os.path.join(self.build_dir, 'Source', 'WTF', 'wtf',
                                        'StdLibExtras.h'),
                           {'(COMPILER(GCC) && !COMPILER(CLANG) && !GCC_VERSION_AT_LEAST(4, 8, 1))': '0',})
-            # XXX: This is a hack. -pthread looks for libpthread.so, but on 
+            # XXX: This is a hack. -pthread looks for libpthread.so, but on
             # Android all that is in libc.so
             os.symlink(os.path.join(self.config.toolchain_prefix, 'platforms',
                                     'android-9', 'arch-arm', 'usr', 'lib',
@@ -130,7 +132,7 @@ class Recipe(recipe.Recipe):
                      'PANGO_LIBS', 'SQLITE3_CFLAGS', 'SQLITE3_LIBS',
                      'ac_cv_lib_jpeg_jpeg_destroy_decompress',
                      'ac_cv_header_png_h', 'ac_cv_lib_png_png_read_info',
-                     'ac_cv_lib_png_png_read_info', 
+                     'ac_cv_lib_png_png_read_info',
                      'ac_cv_header_webp_decode_h'):
             self.new_env[each] = "yes"
         self.new_env['AR_FLAGS'] = 'cru'
