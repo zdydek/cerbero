@@ -1,0 +1,301 @@
+From 26c04aa4de47488b2a5563437ca67b1078e68fcd Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Fri, 17 Jun 2016 14:35:23 +0000
+Subject: [PATCH] Fix OMX TICKS
+
+---
+ configure.ac         |  1 +
+ omx/gstomx.h         | 13 +++++++++++++
+ omx/gstomxaudiodec.c | 20 +++++++++++---------
+ omx/gstomxaudioenc.c | 15 ++++++++-------
+ omx/gstomxvideo.c    |  4 ++--
+ omx/gstomxvideodec.c | 29 ++++++++++++++++-------------
+ omx/gstomxvideoenc.c | 15 ++++++++-------
+ 7 files changed, 59 insertions(+), 38 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 277f233..3409436 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -232,6 +232,7 @@ case "${ac_cv_omx_target}" in
+     ;;
+   rpi)
+     AC_DEFINE(USE_OMX_TARGET_RPI, 1, [Use RPi OpenMAX IL target])
++    AC_DEFINE(OMX_SKIP64BIT, 1, [Required by the RPi implementation])
+     ac_cv_omx_target_struct_packing=4
+     ;;
+   bellagio)
+diff --git a/omx/gstomx.h b/omx/gstomx.h
+index 9ad8e2f..bc9bdd0 100644
+--- a/omx/gstomx.h
++++ b/omx/gstomx.h
+@@ -71,6 +71,19 @@ G_BEGIN_DECLS
+   (st)->nVersion.s.nStep = OMX_VERSION_STEP; \
+ } G_STMT_END
+ 
++#ifdef OMX_SKIP64BIT
++#define GST_OMX_GET_TICKS(ticks) ((((guint64) (ticks).nHighPart) << 32) | ((ticks).nLowPart))
++#define GST_OMX_SET_TICKS(ticks, i) G_STMT_START { \
++  ticks.nLowPart = ((guint64) (i)) & 0xffffffff; \
++  ticks.nHighPart = ((guint64) (i)) >> 32; \
++} G_STMT_END
++#else
++#define GST_OMX_GET_TICKS(ticks) (ticks)
++#define GST_OMX_SET_TICKS(ticks, i) G_STMT_START { \
++  ticks = i; \
++} G_STMT_END
++#endif
++
+ /* Different hacks that are required to work around
+  * bugs in different OpenMAX implementations
+  */
+diff --git a/omx/gstomxaudiodec.c b/omx/gstomxaudiodec.c
+index b6fdf34..6e9d6df 100644
+--- a/omx/gstomxaudiodec.c
++++ b/omx/gstomxaudiodec.c
+@@ -492,7 +492,8 @@ gst_omx_audio_dec_loop (GstOMXAudioDec * self)
+   }
+ 
+   GST_DEBUG_OBJECT (self, "Handling buffer: 0x%08x %" G_GUINT64_FORMAT,
+-      (guint) buf->omx_buf->nFlags, (guint64) buf->omx_buf->nTimeStamp);
++      (guint) buf->omx_buf->nFlags,
++      (guint64) GST_OMX_GET_TICKS (buf->omx_buf->nTimeStamp));
+ 
+   GST_AUDIO_DECODER_STREAM_LOCK (self);
+ 
+@@ -1168,10 +1169,11 @@ gst_omx_audio_dec_handle_frame (GstAudioDecoder * decoder, GstBuffer * inbuf)
+           buf->omx_buf->nFilledLen);
+ 
+       if (GST_CLOCK_TIME_IS_VALID (timestamp))
+-        buf->omx_buf->nTimeStamp =
+-            gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND, GST_SECOND);
++        GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
++            gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND,
++                GST_SECOND));
+       else
+-        buf->omx_buf->nTimeStamp = 0;
++        GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp, G_GUINT64_CONSTANT (0));
+       buf->omx_buf->nTickCount = 0;
+ 
+       self->started = TRUE;
+@@ -1196,11 +1198,11 @@ gst_omx_audio_dec_handle_frame (GstAudioDecoder * decoder, GstBuffer * inbuf)
+         buf->omx_buf->nFilledLen);
+ 
+     if (timestamp != GST_CLOCK_TIME_NONE) {
+-      buf->omx_buf->nTimeStamp =
+-          gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND, GST_SECOND);
++      GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
++          gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND, GST_SECOND));
+       self->last_upstream_ts = timestamp;
+     } else {
+-      buf->omx_buf->nTimeStamp = 0;
++      GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp, G_GUINT64_CONSTANT (0));
+     }
+ 
+     if (duration != GST_CLOCK_TIME_NONE && offset == 0) {
+@@ -1351,9 +1353,9 @@ gst_omx_audio_dec_drain (GstOMXAudioDec * self)
+   g_mutex_lock (&self->drain_lock);
+   self->draining = TRUE;
+   buf->omx_buf->nFilledLen = 0;
+-  buf->omx_buf->nTimeStamp =
++  GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
+       gst_util_uint64_scale (self->last_upstream_ts, OMX_TICKS_PER_SECOND,
+-      GST_SECOND);
++          GST_SECOND));
+   buf->omx_buf->nTickCount = 0;
+   buf->omx_buf->nFlags |= OMX_BUFFERFLAG_EOS;
+   err = gst_omx_port_release_buffer (self->dec_in_port, buf);
+diff --git a/omx/gstomxaudioenc.c b/omx/gstomxaudioenc.c
+index a6ba861..3791279 100644
+--- a/omx/gstomxaudioenc.c
++++ b/omx/gstomxaudioenc.c
+@@ -379,7 +379,8 @@ gst_omx_audio_enc_loop (GstOMXAudioEnc * self)
+   }
+ 
+   GST_DEBUG_OBJECT (self, "Handling buffer: 0x%08x %" G_GUINT64_FORMAT,
+-      (guint) buf->omx_buf->nFlags, (guint64) buf->omx_buf->nTimeStamp);
++      (guint) buf->omx_buf->nFlags,
++      (guint64) GST_OMX_GET_TICKS (buf->omx_buf->nTimeStamp));
+ 
+   /* This prevents a deadlock between the srcpad stream
+    * lock and the videocodec stream lock, if ::reset()
+@@ -447,8 +448,8 @@ gst_omx_audio_enc_loop (GstOMXAudioEnc * self)
+     }
+ 
+     GST_BUFFER_TIMESTAMP (outbuf) =
+-        gst_util_uint64_scale (buf->omx_buf->nTimeStamp, GST_SECOND,
+-        OMX_TICKS_PER_SECOND);
++        gst_util_uint64_scale (GST_OMX_GET_TICKS (buf->omx_buf->nTimeStamp),
++        GST_SECOND, OMX_TICKS_PER_SECOND);
+     if (buf->omx_buf->nTickCount != 0)
+       GST_BUFFER_DURATION (outbuf) =
+           gst_util_uint64_scale (buf->omx_buf->nTickCount, GST_SECOND,
+@@ -1036,9 +1037,9 @@ gst_omx_audio_enc_handle_frame (GstAudioEncoder * encoder, GstBuffer * inbuf)
+     }
+ 
+     if (timestamp != GST_CLOCK_TIME_NONE) {
+-      buf->omx_buf->nTimeStamp =
++      GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
+           gst_util_uint64_scale (timestamp + timestamp_offset,
+-          OMX_TICKS_PER_SECOND, GST_SECOND);
++              OMX_TICKS_PER_SECOND, GST_SECOND));
+       self->last_upstream_ts = timestamp + timestamp_offset;
+     }
+     if (duration != GST_CLOCK_TIME_NONE) {
+@@ -1139,9 +1140,9 @@ gst_omx_audio_enc_drain (GstOMXAudioEnc * self)
+   g_mutex_lock (&self->drain_lock);
+   self->draining = TRUE;
+   buf->omx_buf->nFilledLen = 0;
+-  buf->omx_buf->nTimeStamp =
++  GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
+       gst_util_uint64_scale (self->last_upstream_ts, OMX_TICKS_PER_SECOND,
+-      GST_SECOND);
++          GST_SECOND));
+   buf->omx_buf->nTickCount = 0;
+   buf->omx_buf->nFlags |= OMX_BUFFERFLAG_EOS;
+   err = gst_omx_port_release_buffer (self->enc_in_port, buf);
+diff --git a/omx/gstomxvideo.c b/omx/gstomxvideo.c
+index f052788..314c488 100644
+--- a/omx/gstomxvideo.c
++++ b/omx/gstomxvideo.c
+@@ -172,8 +172,8 @@ gst_omx_video_find_nearest_frame (GstOMXBuffer * buf, GList * frames)
+   GList *l;
+ 
+   timestamp =
+-      gst_util_uint64_scale (buf->omx_buf->nTimeStamp, GST_SECOND,
+-      OMX_TICKS_PER_SECOND);
++      gst_util_uint64_scale (GST_OMX_GET_TICKS (buf->omx_buf->nTimeStamp),
++      GST_SECOND, OMX_TICKS_PER_SECOND);
+ 
+   for (l = frames; l; l = l->next) {
+     GstVideoCodecFrame *tmp = l->data;
+diff --git a/omx/gstomxvideodec.c b/omx/gstomxvideodec.c
+index 2368f34..45d18f3 100644
+--- a/omx/gstomxvideodec.c
++++ b/omx/gstomxvideodec.c
+@@ -530,8 +530,8 @@ gst_omx_video_dec_fill_buffer (GstOMXVideoDec * self,
+ done:
+   if (ret) {
+     GST_BUFFER_PTS (outbuf) =
+-        gst_util_uint64_scale (inbuf->omx_buf->nTimeStamp, GST_SECOND,
+-        OMX_TICKS_PER_SECOND);
++        gst_util_uint64_scale (GST_OMX_GET_TICKS (inbuf->omx_buf->nTimeStamp),
++        GST_SECOND, OMX_TICKS_PER_SECOND);
+     if (inbuf->omx_buf->nTickCount != 0)
+       GST_BUFFER_DURATION (outbuf) =
+           gst_util_uint64_scale (inbuf->omx_buf->nTickCount, GST_SECOND,
+@@ -1176,8 +1176,9 @@ gst_omx_video_dec_clean_older_frames (GstOMXVideoDec * self,
+   GList *l;
+   GstClockTime timestamp;
+ 
+-  timestamp = gst_util_uint64_scale (buf->omx_buf->nTimeStamp, GST_SECOND,
+-      OMX_TICKS_PER_SECOND);
++  timestamp =
++      gst_util_uint64_scale (GST_OMX_GET_TICKS (buf->omx_buf->nTimeStamp),
++      GST_SECOND, OMX_TICKS_PER_SECOND);
+ 
+   if (GST_CLOCK_TIME_IS_VALID (timestamp)) {
+     /* We could release all frames stored with pts < timestamp since the
+@@ -1363,7 +1364,8 @@ gst_omx_video_dec_loop (GstOMXVideoDec * self)
+   }
+ 
+   GST_DEBUG_OBJECT (self, "Handling buffer: 0x%08x %" G_GUINT64_FORMAT,
+-      (guint) buf->omx_buf->nFlags, (guint64) buf->omx_buf->nTimeStamp);
++      (guint) buf->omx_buf->nFlags,
++      (guint64) GST_OMX_GET_TICKS (buf->omx_buf->nTimeStamp));
+ 
+   GST_VIDEO_DECODER_STREAM_LOCK (self);
+   frame = gst_omx_video_find_nearest_frame (buf,
+@@ -2306,10 +2308,11 @@ gst_omx_video_dec_handle_frame (GstVideoDecoder * decoder,
+           buf->omx_buf->nFilledLen);
+ 
+       if (GST_CLOCK_TIME_IS_VALID (timestamp))
+-        buf->omx_buf->nTimeStamp =
+-            gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND, GST_SECOND);
++        GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
++            gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND,
++                GST_SECOND));
+       else
+-        buf->omx_buf->nTimeStamp = 0;
++        GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp, G_GUINT64_CONSTANT (0));
+       buf->omx_buf->nTickCount = 0;
+ 
+       self->started = TRUE;
+@@ -2333,11 +2336,11 @@ gst_omx_video_dec_handle_frame (GstVideoDecoder * decoder,
+         buf->omx_buf->nFilledLen);
+ 
+     if (timestamp != GST_CLOCK_TIME_NONE) {
+-      buf->omx_buf->nTimeStamp =
+-          gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND, GST_SECOND);
++      GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
++          gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND, GST_SECOND));
+       self->last_upstream_ts = timestamp;
+     } else {
+-      buf->omx_buf->nTimeStamp = 0;
++      GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp, G_GUINT64_CONSTANT (0));
+     }
+ 
+     if (duration != GST_CLOCK_TIME_NONE && offset == 0) {
+@@ -2484,9 +2487,9 @@ gst_omx_video_dec_drain (GstOMXVideoDec * self)
+   g_mutex_lock (&self->drain_lock);
+   self->draining = TRUE;
+   buf->omx_buf->nFilledLen = 0;
+-  buf->omx_buf->nTimeStamp =
++  GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
+       gst_util_uint64_scale (self->last_upstream_ts, OMX_TICKS_PER_SECOND,
+-      GST_SECOND);
++          GST_SECOND));
+   buf->omx_buf->nTickCount = 0;
+   buf->omx_buf->nFlags |= OMX_BUFFERFLAG_EOS;
+   err = gst_omx_port_release_buffer (self->dec_in_port, buf);
+diff --git a/omx/gstomxvideoenc.c b/omx/gstomxvideoenc.c
+index 8e6cde3..b2a1f8e 100644
+--- a/omx/gstomxvideoenc.c
++++ b/omx/gstomxvideoenc.c
+@@ -596,8 +596,8 @@ gst_omx_video_enc_handle_output_frame (GstOMXVideoEnc * self, GstOMXPort * port,
+     }
+ 
+     GST_BUFFER_TIMESTAMP (outbuf) =
+-        gst_util_uint64_scale (buf->omx_buf->nTimeStamp, GST_SECOND,
+-        OMX_TICKS_PER_SECOND);
++        gst_util_uint64_scale (GST_OMX_GET_TICKS (buf->omx_buf->nTimeStamp),
++        GST_SECOND, OMX_TICKS_PER_SECOND);
+     if (buf->omx_buf->nTickCount != 0)
+       GST_BUFFER_DURATION (outbuf) =
+           gst_util_uint64_scale (buf->omx_buf->nTickCount, GST_SECOND,
+@@ -747,7 +747,8 @@ gst_omx_video_enc_loop (GstOMXVideoEnc * self)
+   }
+ 
+   GST_DEBUG_OBJECT (self, "Handling buffer: 0x%08x %" G_GUINT64_FORMAT,
+-      (guint) buf->omx_buf->nFlags, (guint64) buf->omx_buf->nTimeStamp);
++      (guint) buf->omx_buf->nFlags,
++      (guint64) GST_OMX_GET_TICKS (buf->omx_buf->nTimeStamp));
+ 
+   GST_VIDEO_ENCODER_STREAM_LOCK (self);
+   frame = gst_omx_video_find_nearest_frame (buf,
+@@ -1587,8 +1588,8 @@ gst_omx_video_enc_handle_frame (GstVideoEncoder * encoder,
+ 
+     timestamp = frame->pts;
+     if (timestamp != GST_CLOCK_TIME_NONE) {
+-      buf->omx_buf->nTimeStamp =
+-          gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND, GST_SECOND);
++      GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
++          gst_util_uint64_scale (timestamp, OMX_TICKS_PER_SECOND, GST_SECOND));
+       self->last_upstream_ts = timestamp;
+     }
+ 
+@@ -1720,9 +1721,9 @@ gst_omx_video_enc_drain (GstOMXVideoEnc * self)
+   g_mutex_lock (&self->drain_lock);
+   self->draining = TRUE;
+   buf->omx_buf->nFilledLen = 0;
+-  buf->omx_buf->nTimeStamp =
++  GST_OMX_SET_TICKS (buf->omx_buf->nTimeStamp,
+       gst_util_uint64_scale (self->last_upstream_ts, OMX_TICKS_PER_SECOND,
+-      GST_SECOND);
++          GST_SECOND));
+   buf->omx_buf->nTickCount = 0;
+   buf->omx_buf->nFlags |= OMX_BUFFERFLAG_EOS;
+   err = gst_omx_port_release_buffer (self->enc_in_port, buf);
+-- 
+2.1.4
+

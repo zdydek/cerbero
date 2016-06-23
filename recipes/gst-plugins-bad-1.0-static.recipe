@@ -3,7 +3,7 @@
 
 class Recipe(custom.GStreamerStatic):
     name = 'gst-plugins-bad-1.0-static'
-    version = '1.8.2'
+    version = '1.4.4'
     gstreamer_version = '1.0'
     licenses = [License.LGPLv2Plus]
     extra_configure_options = '--disable-gsm --disable-festival \
@@ -19,7 +19,7 @@ class Recipe(custom.GStreamerStatic):
         --disable-vdpau --disable-voamrwbenc --disable-wildmidi \
         --disable-xvid --disable-zbar --disable-sdi --disable-hls --disable-qt'
     remotes = {'origin': 'git://anongit.freedesktop.org/gstreamer/gst-plugins-bad'}
-    commit = '9a026799f0a90424d7e20513f45709b4dfdc3d86'
+    commit = 'd77c70215bb684ef385e014db1b4381acd89f3f6'
     patches = ['gst-plugins-bad/0001-egl-Limit-buffer-pools-size-to-2-buffers-on-RPi.patch']
     deps = ['gstreamer-1.0', 'gst-plugins-base-1.0', 'zlib', 'openh264', 'opus',
             'libsrtp', 'openssl', 'graphene']
