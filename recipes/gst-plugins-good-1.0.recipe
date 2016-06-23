@@ -4,12 +4,12 @@ from cerbero.build.build import modify_environment
 
 class Recipe(recipe.Recipe):
     name = 'gst-plugins-good-1.0'
-    version = '1.7'
+    version = '1.8.2'
     licenses = [License.LGPLv2Plus]
     config_sh = 'sh ./autogen.sh --noconfigure && ./configure'
     configure_options = '--disable-examples --disable-oss4 --disable-oss --disable-dv1394 --disable-aalib --disable-libcaca --disable-jack --disable-shout2 '
     remotes = {'origin': 'git://anongit.freedesktop.org/gstreamer/gst-plugins-good'}
-    commit = 'e538608b3f90539003de21c1db238f3c9b946e30'
+    commit = '1e16fb2d4f6f61e602bde798d03157d175304dfb'
     deps = ['gstreamer-1.0', 'gst-plugins-base-1.0', 'orc', 'bzip2', 'zlib',
             'libvpx']
 

@@ -3,7 +3,7 @@
 
 class Recipe(recipe.Recipe):
     name = 'gst-plugins-bad-1.0'
-    version = '1.7'
+    version = '1.8.2'
     licenses = [License.LGPLv2Plus]
     config_sh = 'sh ./autogen.sh --noconfigure && ./configure'
     configure_options = '--enable-static --disable-introspection --disable-gsm \
@@ -23,7 +23,8 @@ class Recipe(recipe.Recipe):
     configure_options += ' --enable-openh264 --enable-opus \
         --enable-srtp'
     remotes = {'origin': 'git://anongit.freedesktop.org/gstreamer/gst-plugins-bad'}
-    commit = 'b9cfa34118e023efb046a9eac78f1b5c275bf839'
+    commit = '9a026799f0a90424d7e20513f45709b4dfdc3d86'
+    patches = ['gst-plugins-bad/0001-egl-Limit-buffer-pools-size-to-2-buffers-on-RPi.patch']
     deps = ['gstreamer-1.0', 'gst-plugins-base-1.0', 'zlib', 'openh264', 'opus',
             'libsrtp', 'openssl']
     use_system_libs = True

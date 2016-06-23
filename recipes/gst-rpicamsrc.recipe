@@ -2,16 +2,19 @@
 
 class Recipe(recipe.Recipe):
     name = 'gst-rpicamsrc'
-    version = ''
+    version = '1.8.2'
     stype = SourceType.GIT
     remotes = { 'origin': 'https://github.com/thaytan/gst-rpicamsrc' }
-    commit = 'origin/master'
+    commit = 'fe12cf13dd60e7a592c6ba406166ae25e409bfd1'
+    patches = ['gst-rpicamsrc/0001-Added-m4-directory-to-configure.patch']
+    autoreconf = True
+    autoreconf_sh = 'mkdir -p m4 && autoreconf -fiv'
     licenses = [License.LGPLv2_1Plus]
-    config_sh = 'sh ./autogen.sh --noconfigure && ./configure'
+    config_sh = 'sh ./autogen.sh --prefix=/usr --libdir=/usr/lib/arm-linux-gnueabihf/ --noconfigure && ./configure'
     configure_options = '--enable-static --enable-shared --disable-introspection --disable-gtk-doc'
     deps = ['gstreamer-1.0', 'gst-plugins-base-1.0']
     use_system_libs = True
 
-    files_capture = [
+    files_plugins_capture = [
         'lib/gstreamer-1.0/libgstrpicamsrc%(mext)s',
     ]
