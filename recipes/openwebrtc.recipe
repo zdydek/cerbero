@@ -43,6 +43,9 @@ class Recipe(recipe.Recipe):
         'origin': 'https://github.com/EricssonResearch/openwebrtc.git'
     }
     commit = 'origin/master'
+    patches = ['openwebrtc/0001-Dont-treat-warnings-as-errors.patch',
+               'openwebrtc/0002-Reverting-transport-Set-rtpbin-RTP-profile-to-SAVPF.patch',
+               'openwebrtc/0003-Reverting-OwrTransportAgent-Print-debug-output-for-a.patch']
     autoreconf = True
     autoreconf_sh = 'mkdir -p m4 && gtkdocize && autoreconf -fiv'
     # Dependencies used in the dynamic (shared) build of OWRTC

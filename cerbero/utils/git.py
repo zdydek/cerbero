@@ -117,7 +117,7 @@ def fetch(git_dir, fail=True):
     @param fail: raise an error if the command failed
     @type fail: false
     '''
-    return shell.call('%s fetch --all' % GIT, git_dir, fail=fail, env=CLEAN_ENV)
+    return shell.call('GIT_TRACE=1 %s fetch --all' % GIT, git_dir, fail=fail, env=CLEAN_ENV)
 
 def submodules_update(git_dir, src_dir=None, fail=True):
     '''
@@ -199,7 +199,7 @@ def local_checkout(git_dir, local_git_dir, commit):
                env=CLEAN_ENV)
     shell.call('%s reset --hard %s' % (GIT, commit), local_git_dir,
                env=CLEAN_ENV)
-    shell.call('%s clone %s -s -b %s .' % (GIT, local_git_dir,
+    shell.call('GIT_TRACE=1 %s clone %s -s -b %s .' % (GIT, local_git_dir,
                                                   branch_name),
                       git_dir, env=CLEAN_ENV)
     submodules_update(git_dir, local_git_dir)

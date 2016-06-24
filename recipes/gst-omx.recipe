@@ -6,9 +6,9 @@ class Recipe(recipe.Recipe):
     stype = SourceType.GIT
     remotes = { 'origin': 'https://cgit.freedesktop.org/gstreamer/gst-omx/' }
     commit = 'da68e6adbf32160be2dc4c05f1757f80699704b6'
-    patches = ['gst-omx/0001-Fix-OMX-TICKS.patch']
+    patches = ['gst-omx/0001-Fix-OMX-TICKS.patch', 'gst-omx/0002-Additional-fixes-for-1.4.4-gstreamer.patch']
     licenses = [License.LGPLv2_1Plus]
-    config_sh = "LDFLAGS='-L/opt/vc/lib -lEGL -lGLESv2 -lbcm_host -lpthread' CPPFLAGS='-L/opt/vc/include -L/opt/vc/include/IL -L/opt/vc/include/interface/vcos/pthreads -L/opt/vc/include/interface/vmcs_host/linux' ./autogen.sh --with-omx-header-path=/opt/vc/include/IL --with-omx-target=rpi --enable-static --enable-shared --disable-introspection --disable-gtk-doc"
+    config_sh = "LDFLAGS='-L/opt/vc/lib -lEGL -lGLESv2 -lbcm_host -lpthread' CFLAGS='-I/opt/vc/include -I/opt/vc/include/IL -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux' ./autogen.sh --with-omx-header-path=/opt/vc/include/IL --with-omx-target=rpi --enable-static --enable-shared --disable-introspection --disable-gtk-doc"
     deps = ['gstreamer-1.0', 'gst-plugins-bad-1.0']
     use_system_libs = True
 

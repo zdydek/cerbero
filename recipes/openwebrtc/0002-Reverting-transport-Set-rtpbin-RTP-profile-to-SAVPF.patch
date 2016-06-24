@@ -1,0 +1,33 @@
+From 4f2141531705312a71c73826921e559ca19e1b3f Mon Sep 17 00:00:00 2001
+From: Zachary Dydek <zachary.dydek@vecna.com>
+Date: Wed, 29 Jun 2016 14:02:08 +0000
+Subject: [PATCH 2/2] Reverting 'transport: Set rtpbin RTP profile to SAVPF'
+
+---
+ transport/owr_transport_agent.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/transport/owr_transport_agent.c b/transport/owr_transport_agent.c
+index 21e88cc..2eaeea2 100644
+--- a/transport/owr_transport_agent.c
++++ b/transport/owr_transport_agent.c
+@@ -66,7 +66,6 @@
+ #include <gst/gst.h>
+ #include <gst/rtp/gstrtcpbuffer.h>
+ #include <gst/rtp/gstrtpbuffer.h>
+-#include <gst/rtp/gstrtpdefs.h>
+ #include <gst/sctp/sctpreceivemeta.h>
+ #include <gst/sctp/sctpsendmeta.h>
+ 
+@@ -1105,7 +1104,7 @@ static gboolean add_session(GHashTable *args)
+     if (OWR_IS_MEDIA_SESSION(session)) {
+         /* stream_id is used as the rtpbin session id */
+         g_signal_emit_by_name(priv->rtpbin, "get-internal-session", stream_id, &rtp_session);
+-        g_object_set(rtp_session, "rtcp-min-interval", GST_SECOND, "bandwidth", 0.0, "rtp-profile", GST_RTP_PROFILE_SAVPF, NULL);
++        g_object_set(rtp_session, "rtcp-min-interval", GST_SECOND, "bandwidth", 0.0, NULL);
+ /*
+         g_object_set(rtp_session, "bandwidth", (gdouble)700000,
+             "rtcp-fraction", (gdouble)100000,
+-- 
+2.1.4
+

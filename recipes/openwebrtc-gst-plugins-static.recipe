@@ -33,6 +33,7 @@ class Recipe(custom.GStreamerStatic):
     licenses = [License.BSD_like]
     remotes = { 'origin': 'https://github.com/EricssonResearch/openwebrtc-gst-plugins.git' }
     commit = 'origin/master'
+    patches = ['openwebrtc-gst-plugins-static/0001-Dont-treat-warnings-as-errors.patch']
     autoreconf = True
     autoreconf_sh = 'mkdir -p m4 && autoreconf -fiv'
     deps = ['gettext', 'gstreamer-1.0', 'gst-plugins-base-1.0',

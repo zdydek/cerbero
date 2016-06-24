@@ -1,0 +1,36 @@
+From 2f1a2dc84bee59e4e4f045daa8bcf3b2d16fb59b Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Mon, 20 Jun 2016 12:21:10 +0000
+Subject: [PATCH] Added m4 directory to configure
+
+---
+ configure.ac         | 1 +
+ examples/Makefile.am | 3 +--
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 18fa3c3..75a1c1d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -101,3 +101,4 @@ AC_SUBST(GST_PLUGIN_LDFLAGS)
+ AC_CONFIG_FILES([Makefile src/Makefile examples/Makefile])
+ AC_OUTPUT
+ 
++AC_CONFIG_MACRO_DIRS([m4])
+diff --git a/examples/Makefile.am b/examples/Makefile.am
+index ab697a3..db4c336 100644
+--- a/examples/Makefile.am
++++ b/examples/Makefile.am
+@@ -4,8 +4,7 @@ AM_CPPFLAGS = \
+ 
+ AM_CFLAGS = \
+     -Wall \
+-    -Wextra \
+-    -Werror
++    -Wextra
+ 
+ noinst_PROGRAMS = \
+     test-color-balance \
+-- 
+2.1.4
+

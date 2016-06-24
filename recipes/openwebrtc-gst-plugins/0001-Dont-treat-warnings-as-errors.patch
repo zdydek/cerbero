@@ -1,0 +1,39 @@
+From 700ee8bf50262dd869baf96c752803bb73158498 Mon Sep 17 00:00:00 2001
+From: Zachary Dydek <zachary.dydek@vecna.com>
+Date: Sat, 25 Jun 2016 14:46:27 +0000
+Subject: [PATCH] Dont treat warnings as errors.
+
+---
+ gst/scream/Makefile.am      | 2 +-
+ gst/videorepair/Makefile.am | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/gst/scream/Makefile.am b/gst/scream/Makefile.am
+index c426f7b..e5f190a 100644
+--- a/gst/scream/Makefile.am
++++ b/gst/scream/Makefile.am
+@@ -6,7 +6,7 @@ libgstscream_la_SOURCES = \
+     gstscreamqueue.c
+ 
+ libgstscream_la_CFLAGS = \
+-    -Wall -Wextra -Werror \
++    -Wall -Wextra \
+     $(GST_PLUGINS_BASE_CFLAGS) \
+     $(GST_BASE_CFLAGS) \
+     $(GST_CFLAGS)
+diff --git a/gst/videorepair/Makefile.am b/gst/videorepair/Makefile.am
+index 34487b5..34c3887 100644
+--- a/gst/videorepair/Makefile.am
++++ b/gst/videorepair/Makefile.am
+@@ -17,7 +17,7 @@ plugin_LTLIBRARIES = libgstvideorepair.la
+ libgstvideorepair_la_SOURCES = gstvideorepair.c
+ 
+ # compiler and linker flags used to compile this plugin, set in configure.ac
+-libgstvideorepair_la_CFLAGS = $(GST_CFLAGS) $(GST_PLUGINS_BASE_CFLAGS) -Wall -Wextra -Werror
++libgstvideorepair_la_CFLAGS = $(GST_CFLAGS) $(GST_PLUGINS_BASE_CFLAGS) -Wall -Wextra
+ libgstvideorepair_la_LIBADD = $(GST_LIBS) -lgstvideo-1.0
+ libgstvideorepair_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
+ if !GST_PLUGIN_BUILD_STATIC
+-- 
+2.1.4
+

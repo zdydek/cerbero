@@ -1,0 +1,91 @@
+From 895ad93368bd23c097be73fe678b61b5553252a3 Mon Sep 17 00:00:00 2001
+From: Zachary Dydek <zachary.dydek@vecna.com>
+Date: Tue, 28 Jun 2016 03:45:45 +0000
+Subject: [PATCH] Dont treat warnings as errors.
+
+---
+ bridge/Makefile.am    | 1 -
+ gst/Makefile.am       | 1 -
+ local/Makefile.am     | 1 -
+ owr/Makefile.am       | 1 -
+ tests/Makefile.am     | 3 +--
+ transport/Makefile.am | 1 -
+ 6 files changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/bridge/Makefile.am b/bridge/Makefile.am
+index 6638587..8c9a96f 100644
+--- a/bridge/Makefile.am
++++ b/bridge/Makefile.am
+@@ -15,7 +15,6 @@ AM_CPPFLAGS = \
+ AM_CFLAGS = \
+     -Wall \
+     -Wextra \
+-    -Werror \
+     $(DEBUG_CFLAGS)
+ 
+ lib_LTLIBRARIES = libopenwebrtc_bridge.la
+diff --git a/gst/Makefile.am b/gst/Makefile.am
+index d4bccea..a6b77f4 100644
+--- a/gst/Makefile.am
++++ b/gst/Makefile.am
+@@ -12,7 +12,6 @@ AM_CPPFLAGS = \
+ AM_CFLAGS = \
+     -Wall \
+     -Wextra \
+-    -Werror \
+     -Wno-parentheses-equality \
+     $(DEBUG_CFLAGS)
+ 
+diff --git a/local/Makefile.am b/local/Makefile.am
+index 7a0fad5..ec4a73e 100644
+--- a/local/Makefile.am
++++ b/local/Makefile.am
+@@ -12,7 +12,6 @@ AM_CPPFLAGS = \
+ AM_CFLAGS = \
+     -Wall \
+     -Wextra \
+-    -Werror \
+     -Wno-parentheses-equality \
+     $(DEBUG_CFLAGS)
+ 
+diff --git a/owr/Makefile.am b/owr/Makefile.am
+index 4955f72..fc87d6d 100644
+--- a/owr/Makefile.am
++++ b/owr/Makefile.am
+@@ -13,7 +13,6 @@ AM_CPPFLAGS = \
+ AM_CFLAGS = \
+     -Wall \
+     -Wextra \
+-    -Werror \
+     -Wno-parentheses-equality \
+     $(DEBUG_CFLAGS)
+ 
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 28ac557..2db3b24 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -11,8 +11,7 @@ AM_CPPFLAGS = \
+ 
+ AM_CFLAGS = \
+     -Wall \
+-    -Wextra \
+-    -Werror
++    -Wextra
+ 
+ bin_PROGRAMS = \
+     list-devices \
+diff --git a/transport/Makefile.am b/transport/Makefile.am
+index 2b96ec4..81b655e 100644
+--- a/transport/Makefile.am
++++ b/transport/Makefile.am
+@@ -15,7 +15,6 @@ AM_CPPFLAGS = \
+ AM_CFLAGS = \
+     -Wall \
+     -Wextra \
+-    -Werror \
+     -Wno-parentheses-equality \
+     $(DEBUG_CFLAGS)
+ 
+-- 
+2.1.4
+

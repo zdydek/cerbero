@@ -1,0 +1,27 @@
+From 3a6d5f5ff3ef1df0782bc39b5b146f48fbc3bf16 Mon Sep 17 00:00:00 2001
+From: Zachary Dydek <zachary.dydek@vecna.com>
+Date: Fri, 24 Jun 2016 18:18:15 +0000
+Subject: [PATCH 2/2] Additional fixes for 1.4.4 gstreamer.
+
+---
+ omx/gstomxaudiodec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/omx/gstomxaudiodec.c b/omx/gstomxaudiodec.c
+index e616e00..daf9c90 100644
+--- a/omx/gstomxaudiodec.c
++++ b/omx/gstomxaudiodec.c
+@@ -539,8 +539,8 @@ gst_omx_audio_dec_loop (GstOMXAudioDec * self)
+     }
+ 
+     GST_BUFFER_TIMESTAMP (outbuf) =
+-        gst_util_uint64_scale (buf->omx_buf->nTimeStamp, GST_SECOND,
+-        OMX_TICKS_PER_SECOND);
++        gst_util_uint64_scale (GST_OMX_GET_TICKS (buf->omx_buf->nTimeStamp),
++        GST_SECOND, OMX_TICKS_PER_SECOND);
+     if (buf->omx_buf->nTickCount != 0)
+       GST_BUFFER_DURATION (outbuf) =
+           gst_util_uint64_scale (buf->omx_buf->nTickCount, GST_SECOND,
+-- 
+2.1.4
+
