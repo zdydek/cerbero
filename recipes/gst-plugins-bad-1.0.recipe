@@ -30,7 +30,8 @@ class Recipe(recipe.Recipe):
     deps = ['gstreamer-1.0', 'gst-plugins-base-1.0', 'bzip2', 'libass',
             'faad2', 'libkate', 'zlib', 'openh264', 'opus', 'nettle', 'librtmp',
             'libsrtp', 'schroedinger', 'libdca', 'libmms', 'libdvdnav',
-            'soundtouch', 'vo-aacenc', 'librsvg', 'openjpeg', 'graphene', 'spandsp']
+            'soundtouch', 'vo-aacenc', 'librsvg', 'openjpeg', 'graphene',
+            'spandsp', 'webrtc-audio-processing']
     use_system_libs = True
 
     files_lang = ['gst-plugins-bad-1.0']
@@ -55,6 +56,18 @@ class Recipe(recipe.Recipe):
 
     files_plugins_effects = [
              'lib/gstreamer-1.0/libgstinter%(mext)s',
+             'lib/gstreamer-1.0/libgstinterlace%(mext)s',
+             'lib/gstreamer-1.0/libgstivtc%(mext)s',
+             'lib/gstreamer-1.0/libgstrawparse%(mext)s',
+             'lib/gstreamer-1.0/libgstremovesilence%(mext)s',
+             'lib/gstreamer-1.0/libgstsegmentclip%(mext)s',
+             'lib/gstreamer-1.0/libgstsmooth%(mext)s',
+             'lib/gstreamer-1.0/libgstspeed%(mext)s',
+             'lib/gstreamer-1.0/libgstsoundtouch%(mext)s',
+             'lib/gstreamer-1.0/libgstvideofiltersbad%(mext)s',
+             'lib/gstreamer-1.0/libgstaudiomixer%(mext)s',
+             'lib/gstreamer-1.0/libgstcompositor%(mext)s',
+             'lib/gstreamer-1.0/libgstwebrtcdsp%(mext)s',
     ]
 
     files_plugins_codecs = [
