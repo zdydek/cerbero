@@ -10,8 +10,10 @@ class Recipe(recipe.Recipe):
     configure_options = '--disable-examples --disable-oss4 --disable-oss --disable-dv1394 --disable-aalib --disable-libcaca --disable-jack --disable-shout2 '
     remotes = {'origin': 'git://anongit.freedesktop.org/gstreamer/gst-plugins-good'}
     commit = '5670d66a53fac20d039c3a85a70b643fe9309fa7'
-    deps = ['gstreamer-1.0', 'gst-plugins-base-1.0', 'orc', 'bzip2', 'zlib',
-            'libvpx']
+    deps = ['gstreamer-1.0', 'gst-plugins-base-1.0', 'libjpeg-turbo', 'libpng',
+            'speex', 'gdk-pixbuf', 'libsoup',
+            'orc', 'wavpack', 'flac', 'taglib', 'bzip2', 'zlib',
+            'libvpx', 'libdv', 'cairo']
 
 
     files_lang = ['gst-plugins-good-1.0']
