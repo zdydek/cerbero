@@ -3,7 +3,7 @@
 
 class Recipe(recipe.Recipe):
     name = 'gst-plugins-bad-1.0'
-    version = '1.4.4'
+    version = '1.9'
     licenses = [License.LGPLv2Plus]
     config_sh = 'sh ./autogen.sh --noconfigure && ./configure'
     configure_options = '--enable-static --disable-introspection --disable-gsm \
@@ -23,7 +23,8 @@ class Recipe(recipe.Recipe):
     configure_options += ' --enable-openh264 --enable-opus \
         --enable-srtp'
     remotes = {'origin': 'git://anongit.freedesktop.org/gstreamer/gst-plugins-bad'}
-    commit = 'd77c70215bb684ef385e014db1b4381acd89f3f6'
+    commit = '34c88dca2d977638bf6669d321bf92eea566cbf3'
+    patches = ['gst-plugins-bad/0001-egl-Limit-buffer-pools-size-to-2-buffers-on-RPi.patch']
     deps = ['gstreamer-1.0', 'gst-plugins-base-1.0', 'zlib', 'openh264', 'opus',
             'libsrtp', 'openssl']
     use_system_libs = True
@@ -34,7 +35,18 @@ class Recipe(recipe.Recipe):
 
     files_plugins_devel = [
         'include/gstreamer-1.0/gst/gl',
-        'lib/gstreamer-1.0/include/gst/gl'
+        'lib/gstreamer-1.0/include/gst/gl',
+        'include/gstreamer-1.0/gst/base',
+        'include/gstreamer-1.0/gst/audio',
+        'include/gstreamer-1.0/gst/video',
+        'include/gstreamer-1.0/gst/codecparsers',
+        'include/gstreamer-1.0/gst/interfaces',
+        'lib/pkgconfig/gstreamer-plugins-bad-1.0.pc',
+        'lib/pkgconfig/gstreamer-gl-1.0.pc',
+        'lib/pkgconfig/gstreamer-bad-base-1.0.pc',
+        'lib/pkgconfig/gstreamer-bad-audio-1.0.pc',
+        'lib/pkgconfig/gstreamer-bad-video-1.0.pc',
+        'lib/pkgconfig/gstreamer-codecparsers-1.0.pc'
     ]
 
     files_plugins_effects = [
@@ -42,8 +54,8 @@ class Recipe(recipe.Recipe):
     ]
 
     files_plugins_codecs = [
+             'lib/gstreamer-1.0/libgstopenh264%(mext)s',
              'lib/gstreamer-1.0/libgstvideoparsersbad%(mext)s',
-             'lib/gstreamer-1.0/libgstopus%(mext)s',
     ]
 
     platform_files_plugins_codecs = {
@@ -62,6 +74,7 @@ class Recipe(recipe.Recipe):
 
     files_plugins_net = [
              'lib/gstreamer-1.0/libgstsrtp%(mext)s',
+             'lib/gstreamer-1.0/libgstdtls%(mext)s',
     ]
 
     files_plugins_net_restricted = [

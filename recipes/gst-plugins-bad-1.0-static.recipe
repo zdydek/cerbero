@@ -3,7 +3,7 @@
 
 class Recipe(custom.GStreamerStatic):
     name = 'gst-plugins-bad-1.0-static'
-    version = '1.4.4'
+    version = '1.9'
     gstreamer_version = '1.0'
     licenses = [License.LGPLv2Plus]
     extra_configure_options = '--disable-gsm --disable-festival \
@@ -19,7 +19,7 @@ class Recipe(custom.GStreamerStatic):
         --disable-vdpau --disable-voamrwbenc --disable-wildmidi \
         --disable-xvid --disable-zbar --disable-sdi --disable-hls --disable-qt'
     remotes = {'origin': 'git://anongit.freedesktop.org/gstreamer/gst-plugins-bad'}
-    commit = 'd77c70215bb684ef385e014db1b4381acd89f3f6'
+    commit = '34c88dca2d977638bf6669d321bf92eea566cbf3'
     deps = ['gstreamer-1.0', 'gst-plugins-base-1.0', 'zlib', 'openh264', 'opus',
             'libsrtp', 'openssl', 'graphene']
     use_system_libs = True
@@ -29,8 +29,8 @@ class Recipe(custom.GStreamerStatic):
     ]
 
     files_plugins_codecs_devel = [
+             'libgstopenh264',
              'libgstvideoparsersbad',
-             'libgstopus',
     ]
 
     platform_files_plugins_codecs_devel = {
@@ -49,6 +49,7 @@ class Recipe(custom.GStreamerStatic):
 
     files_plugins_net_devel = [
              'libgstsrtp',
+             'libgstdtls',
     ]
 
     files_plugins_net_restricted_devel = [

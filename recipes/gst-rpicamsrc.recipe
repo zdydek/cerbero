@@ -2,10 +2,10 @@
 
 class Recipe(recipe.Recipe):
     name = 'gst-rpicamsrc'
-    version = '1.8.2'
+    version = '1.9'
     stype = SourceType.GIT
     remotes = { 'origin': 'https://github.com/thaytan/gst-rpicamsrc' }
-    commit = 'fe12cf13dd60e7a592c6ba406166ae25e409bfd1'
+    commit = 'f5ba100fae43d964a95f22123c610e58a12e5c3d'
     patches = ['gst-rpicamsrc/0001-Added-m4-directory-to-configure.patch']
     autoreconf = True
     autoreconf_sh = 'mkdir -p m4 && autoreconf -fiv'

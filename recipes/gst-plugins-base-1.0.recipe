@@ -3,13 +3,13 @@
 
 class Recipe(recipe.Recipe):
     name = 'gst-plugins-base-1.0'
-    version = '1.4.4'
+    version = '1.9'
     licenses = [License.LGPLv2Plus]
     config_sh = 'sh ./autogen.sh --noconfigure && ./configure'
     configure_options = "--enable-static --program-prefix= --disable-examples "
     remotes = {'origin': 'git://anongit.freedesktop.org/gstreamer/gst-plugins-base'}
-    commit = '256f42f042db007af0651412facefccb2cfeca90'
-    deps = ['glib', 'gstreamer-1.0', 'zlib', 'orc']
+    commit = '5de9d5809b7b843424740dfdbb12dae238e21fef'
+    deps = ['glib', 'gstreamer-1.0', 'zlib', 'orc', 'opus']
     use_system_libs = True
 
     files_bins = ['gst-discoverer-1.0', 'gst-play-1.0', 'gst-device-monitor-1.0']
@@ -35,6 +35,7 @@ class Recipe(recipe.Recipe):
     ]
 
     files_plugins_codecs = [
+             'lib/gstreamer-1.0/libgstopus%(mext)s',
             ]
 
     files_plugins_devel = [

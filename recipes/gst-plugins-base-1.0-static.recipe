@@ -3,13 +3,13 @@
 
 class Recipe(custom.GStreamerStatic):
     name = 'gst-plugins-base-1.0-static'
-    version = '1.4.4'
+    version = '1.9'
     gstreamer_version = '1.0'
     licenses = [License.LGPLv2Plus]
     extra_configure_options = "--enable-static"
     remotes = {'origin': 'git://anongit.freedesktop.org/gstreamer/gst-plugins-base'}
-    commit = '256f42f042db007af0651412facefccb2cfeca90'
-    deps = ['glib', 'gstreamer-1.0', 'zlib', 'orc']
+    commit = '5de9d5809b7b843424740dfdbb12dae238e21fef'
+    deps = ['glib', 'gstreamer-1.0', 'zlib', 'orc', 'opus']
     use_system_libs = True
 
     files_plugins_core_devel = [
@@ -27,6 +27,7 @@ class Recipe(custom.GStreamerStatic):
     ]
 
     files_plugins_codecs_devel = [
+             'libgstopus',
             ]
 
     def prepare(self):
