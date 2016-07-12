@@ -5,7 +5,7 @@ class Recipe(recipe.Recipe):
     name = 'gst-plugins-bad-1.0'
     version = '1.9'
     licenses = [License.LGPLv2Plus]
-    config_sh = 'sh ./autogen.sh --noconfigure && ./configure'
+    config_sh = 'CFLAGS="-I/opt/vc/include/EGL -I/opt/vc/include/GLES -I/opt/vc/include/GLES2 -I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux" LDFLAGS="-L/opt/vc/lib" CPPFLAGS="-I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/EGL -I/opt/vc/include/GLES -I/opt/vc/include/GLES2" sh ./autogen.sh --noconfigure && ./configure'
     configure_options = '--enable-static --disable-introspection --disable-gsm \
         --disable-examples --disable-festival \
         --disable-videomaxrate --disable-bz2 --disable-libde265 \
@@ -18,13 +18,13 @@ class Recipe(recipe.Recipe):
         --disable-pvr --disable-sdl --disable-sndfile \
         --disable-teletextdec --disable-timidity \
         --disable-vdpau --disable-voamrwbenc --disable-wildmidi \
-        --disable-xvid --disable-zbar --disable-sdi --disable-hls --disable-qt'
+        --disable-xvid --disable-zbar --disable-sdi --disable-hls --disable-qt \
+        --disable-glx --disable-x11 --enable-egl --enable-gl --enable-dispmanx --enable-gles2'
     # Explicitly enable plugins
     configure_options += ' --enable-openh264 --enable-opus \
         --enable-srtp'
     remotes = {'origin': 'git://anongit.freedesktop.org/gstreamer/gst-plugins-bad'}
     commit = '34c88dca2d977638bf6669d321bf92eea566cbf3'
-    patches = ['gst-plugins-bad/0001-egl-Limit-buffer-pools-size-to-2-buffers-on-RPi.patch']
     deps = ['gstreamer-1.0', 'gst-plugins-base-1.0', 'zlib', 'openh264', 'opus',
             'libsrtp', 'openssl']
     use_system_libs = True

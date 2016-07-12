@@ -5,9 +5,9 @@ class Recipe(recipe.Recipe):
     version = '1.9'
     stype = SourceType.GIT
     remotes = { 'origin': 'https://cgit.freedesktop.org/gstreamer/gst-omx/' }
-    commit = 'add5f780c2c25312e400bb1287528874e1d1ffba'
+    commit = '766cd65fa4c76eda6438b3aaa2f9afcaa9a2d660'
     licenses = [License.LGPLv2_1Plus]
-    config_sh = "LDFLAGS='-L/opt/vc/lib -lEGL -lGLESv2 -lbcm_host -lpthread' CFLAGS='-I/opt/vc/include -I/opt/vc/include/IL -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux' ./autogen.sh --with-omx-header-path=/opt/vc/include/IL --with-omx-target=rpi --enable-static --enable-shared --disable-introspection --disable-gtk-doc"
+    config_sh = "LDFLAGS='-L/opt/vc/lib -lEGL -lGLESv2 -lbcm_host' CPPFLAGS='-I/opt/vc/include -I/opt/vc/include/IL -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/GLES -I/opt/vc/include/GLES2' ./autogen.sh --with-omx-header-path=/opt/vc/include/IL --with-omx-target=rpi --enable-static --enable-shared --disable-introspection --disable-gtk-doc --disable-glx --disable-x11 --enable-egl --enable-gl --enable-dispmanx --enable-gles2"
     deps = ['gstreamer-1.0', 'gst-plugins-bad-1.0']
     use_system_libs = True
 
