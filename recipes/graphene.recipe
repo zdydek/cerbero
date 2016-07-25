@@ -27,8 +27,7 @@ class Recipe(recipe.Recipe):
     }
     commit = 'c2d3aae9432c1a465beda7433a6771c8fcdf09dc'
     licenses = [License.MIT]
-    # Disable NEON completly, it's broken and experimental   
-    configure_options = ' --enable-static --enable-shared --disable-arm-neon'
+    configure_options = ' --enable-static --enable-shared'
     deps = ['glib']
 
     config_sh = 'sh ./autogen.sh'
