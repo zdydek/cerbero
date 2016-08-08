@@ -5,7 +5,7 @@ class Recipe(recipe.Recipe):
     name = 'gst-plugins-bad-1.0'
     version = '1.9'
     licenses = [License.LGPLv2Plus]
-    config_sh = 'CFLAGS="-I/opt/vc/include/EGL -I/opt/vc/include/GLES -I/opt/vc/include/GLES2 -I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux" LDFLAGS="-L/opt/vc/lib" CPPFLAGS="-I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/EGL -I/opt/vc/include/GLES -I/opt/vc/include/GLES2" sh ./autogen.sh --noconfigure && ./configure'
+    config_sh = 'CPPFLAGS="-I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vcos -I/opt/vc/include/interface/vmcs_host/linux" LDFLAGS=-L/opt/vc/lib sh ./autogen.sh --noconfigure && ./configure'
     configure_options = '--enable-static --disable-introspection --disable-gsm \
         --disable-examples --disable-festival \
         --disable-videomaxrate --disable-bz2 --disable-libde265 \
@@ -19,7 +19,9 @@ class Recipe(recipe.Recipe):
         --disable-teletextdec --disable-timidity \
         --disable-vdpau --disable-voamrwbenc --disable-wildmidi \
         --disable-xvid --disable-zbar --disable-sdi --disable-hls --disable-qt \
-        --disable-glx --disable-x11 --enable-egl --enable-gl --enable-dispmanx --enable-gles2'
+        --disable-glx --disable-x11 --disable-opengl --enable-gles2 --disable-wayland \
+        --with-gles2-module-name=/opt/vc/lib/libGLESv2.so --with-egl-module-name=/opt/vc/lib/libEGL.so \
+        --disable-fatal-warnings'
     # Explicitly enable plugins
     configure_options += ' --enable-openh264 --enable-opus \
         --enable-srtp'
@@ -98,25 +100,20 @@ class Recipe(recipe.Recipe):
 
     platform_files_plugins_sys = {
         Platform.LINUX: [
-             'lib/gstreamer-1.0/libgstopengl%(mext)s',
              'lib/gstreamer-1.0/libgstdecklink%(mext)s',
             ],
         Platform.WINDOWS: [
              'lib/gstreamer-1.0/libgstd3dvideosink%(mext)s',
-             'lib/gstreamer-1.0/libgstopengl%(mext)s'
             ],
         Platform.DARWIN: [
              'lib/gstreamer-1.0/libgstapplemedia%(mext)s',
-             'lib/gstreamer-1.0/libgstopengl%(mext)s',
              'lib/gstreamer-1.0/libgstdecklink%(mext)s',
             ],
         Platform.IOS: [
              'lib/gstreamer-1.0/libgstapplemedia%(mext)s',
-             'lib/gstreamer-1.0/libgstopengl%(mext)s'
             ],
         Platform.ANDROID: [
              'lib/gstreamer-1.0/libgstopensles%(mext)s',
-             'lib/gstreamer-1.0/libgstopengl%(mext)s'
             ]
     }
     files_typelibs = [
