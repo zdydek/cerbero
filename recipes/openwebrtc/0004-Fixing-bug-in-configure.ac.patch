@@ -1,0 +1,25 @@
+From 2b5aee5083aeb7ec1d6353694dddf1432cdf2cb1 Mon Sep 17 00:00:00 2001
+From: Zachary Dydek <zachary.dydek@vecna.com>
+Date: Wed, 17 Aug 2016 00:28:46 +0000
+Subject: [PATCH] Fixing bug in configure.ac
+
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index de95321..2bee2af 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -96,7 +96,7 @@ AC_HELP_STRING(
+ esac],[enable_tests=yes])
+ AC_MSG_RESULT([$enable_tests])
+ if test "x$enable_tests" = xyes; then
+-  PKG_CHECK_MODULES(JSON_GLIB, [json-glib-1.0], [$have_json_glib=yes], [$have_json_glib=no])
++  PKG_CHECK_MODULES(JSON_GLIB, [json-glib-1.0], [have_json_glib=yes], [have_json_glib=no])
+   PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4])
+   AC_DEFINE(OWR_TESTS, 1,
+   [Define if building tests])
+-- 
+2.1.4
+

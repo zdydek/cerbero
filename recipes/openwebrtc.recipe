@@ -40,10 +40,10 @@ class Recipe(recipe.Recipe):
     stype = SourceType.GIT
     licenses = [License.BSD_like]
     remotes = {
-        'origin': 'https://github.com/Metrological/openwebrtc.git'
+        'origin': 'https://github.com/zdydek/openwebrtc.git'
     }
-    commit = 'origin/calvaris/rpi-compressed'
-    patches = ['openwebrtc/0001-Dont-treat-warnings-as-errors.patch']
+    commit = 'origin/master'
+    patches = ['openwebrtc/0001-Dont-treat-warnings-as-errors.patch', 'openwebrtc/0004-Fixing-bug-in-configure.ac.patch']
     autoreconf = True
     autoreconf_sh = 'mkdir -p m4 && gtkdocize && autoreconf -fiv'
     # Dependencies used in the dynamic (shared) build of OWRTC
@@ -75,6 +75,10 @@ class Recipe(recipe.Recipe):
     }
 
     def prepare(self):
+
+        self.append_env['CPPFLAGS'] = " -Wno-error -I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vcos -I/opt/vc/include/interface/vmcs_host/linux "      
+        self.append_env['LDFLAGS'] = " -L/opt/vc/lib -lbcm_host "
+
         if self.config.variants.owr_bridge:
             self.deps += ['seed']
             self.files_libs += ['libopenwebrtc_bridge']

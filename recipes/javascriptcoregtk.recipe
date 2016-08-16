@@ -45,6 +45,8 @@ class Recipe(recipe.Recipe):
             --disable-web-audio"
     deps = ['glib', 'icu']
     platform_deps = {Platform.ANDROID: ['gnustl']}
+    # Parallel builds cause system to run out of memory during linking
+    allow_parallel_build = False
 
     files_libs = ['libjavascriptcoregtk-3.0']
     files_devel = ['include/webkitgtk-3.0/JavaScriptCore',

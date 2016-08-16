@@ -5,7 +5,7 @@ class Recipe(recipe.Recipe):
     name = 'gst-plugins-bad-1.0'
     version = '1.9'
     licenses = [License.LGPLv2Plus]
-    config_sh = 'CPPFLAGS="-I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vcos -I/opt/vc/include/interface/vmcs_host/linux" LDFLAGS=-L/opt/vc/lib sh ./autogen.sh --noconfigure && ./configure'
+    config_sh = 'sh ./autogen.sh --noconfigure && ./configure'
     configure_options = '--enable-static --disable-introspection --disable-gsm \
         --disable-examples --disable-festival \
         --disable-videomaxrate --disable-bz2 --disable-libde265 \
@@ -126,7 +126,9 @@ class Recipe(recipe.Recipe):
         self.append_env['CFLAGS'] = " -Wno-error -DGSTREAMER_GLIB_COCOA_NSAPPLICATION=1 "
         self.append_env['OBJCFLAGS'] = " -Wno-error -DGSTREAMER_GLIB_COCOA_NSAPPLICATION=1 "
         self.append_env['CXXFLAGS'] = " -Wno-error "
-        self.append_env['CPPFLAGS'] = " -Wno-error "
+        self.append_env['CPPFLAGS'] = " -Wno-error -I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vcos -I/opt/vc/include/interface/vmcs_host/linux "
+        self.append_env['LDFLAGS'] = " -L/opt/vc/lib -lbcm_host "
+
 
         if self.config.variants.gtk3:
             self.deps.append("gtk+3")
