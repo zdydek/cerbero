@@ -52,6 +52,13 @@ class Recipe(recipe.Recipe):
         if self.config.target_arch == Architecture.ARMv7L:
             self.new_env['CFLAGS'] = os.environ['CFLAGS'].replace('-mcpu=cortex-a7', '').replace('-mfpu=neon-vfpv4', '').replace('-mfpu=neon', '')
 
+        # -msse4.1 causes clang to segfault building graphene-matrix.c on OS X
+        # when building for x64_64. Disable it for now.
+        if self.config.target_platform in [Platform.DARWIN, Platform.IOS]:
+            arch = self.config.target_arch
+            if arch == Architecture.X86_64:
+                self.new_env['SSE41_CFLAGS'] = " "
+
     def post_install(self):
         if self.config.target_platform in [Platform.DARWIN, Platform.IOS]:
             # For the universal build we need to ship graphene-config.h of all
