@@ -97,6 +97,8 @@ class Recipe(recipe.Recipe):
         else:
             self.configure_options += '--enable-shared '
             platform = 'linux'
+            if self.config.target_arch == Architecture.ARMv7L:
+                self.append_env['CFLAGS'] = " -fPIC "
 
         self.configure_options += ' --disable-examples '
 
@@ -107,8 +109,6 @@ class Recipe(recipe.Recipe):
 
         # Enable error concealment
         self.configure_options += ' --enable-error-concealment '
-
-        self.append_env['CFLAGS'] = " -fPIC "
 
     def configure(self):
         if self.config.target_platform == Platform.ANDROID:
